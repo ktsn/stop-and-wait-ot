@@ -1,0 +1,11 @@
+{
+  "name": "google-ot",
+  "version": "1.0.0",
+  "author": "katashin",
+  "devDependencies": {
+    "del": "^1.1.1",
+    "gulp": "^3.8.11",
+    "gulp-typescript": "< 2.7.0",
+    "run-sequence": "^1.1.0"
+  }
+}
