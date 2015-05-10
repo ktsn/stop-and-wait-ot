@@ -1,6 +1,6 @@
 import Operation = require('./operation');
 
-export class AddOperation extends Operation {
+class AddOperation extends Operation {
   constructor(siteId: number, seqId: number) {
     super(siteId, seqId, 'add');
   }
@@ -29,3 +29,5 @@ export class AddOperation extends Operation {
     return clone;
   }
 }
+
+export = AddOperation;
