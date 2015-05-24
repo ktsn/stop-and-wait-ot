@@ -3,13 +3,14 @@ import AddOperation = require('../../app/ts/operations/add-operation');
 import StateSpace = require('../../app/ts/state/state-space');
 import State = require('../../app/ts/state/state');
 import Command = require('../../app/ts/state/command');
+import SendingQueue = require('../../app/ts/state/sending-queue');
 
 describe('StateSpace', function() {
   var space;
   var siteId = 1;
 
   beforeEach(function() {
-    space = new StateSpace(siteId);
+    space = new StateSpace(siteId, new SendingQueue());
   });
 
   it('just update the local state if the local flag is up', function() {
