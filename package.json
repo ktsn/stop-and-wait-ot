@@ -2,6 +2,7 @@
   "name": "google-ot",
   "version": "1.0.0",
   "author": "katashin",
+  "private": true,
   "devDependencies": {
     "chai": "^2.3.0",
     "del": "^1.1.1",
