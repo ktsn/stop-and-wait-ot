@@ -25,10 +25,7 @@ class Operation {
   }
 
   clone() : Operation {
-    var clone = new Operation(this._siteId, this._seqId, this._type);
-    clone.position = this.position;
-    clone.value = this.value;
-    return clone;
+    throw new Error('Class "Operation" requires inheritance');
   }
 
   transformWithAdd(op: Operation) : Operation {

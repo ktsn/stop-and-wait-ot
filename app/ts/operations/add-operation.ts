@@ -5,6 +5,13 @@ class AddOperation extends Operation {
     super(siteId, seqId, 'add');
   }
 
+  clone() : Operation {
+    var clone = new AddOperation(this.siteId, this.seqId);
+    clone.position = this.position;
+    clone.value = this.value;
+    return clone;
+  }
+
   transformWithAdd(op: Operation) : Operation {
     var clone = this.clone();
 

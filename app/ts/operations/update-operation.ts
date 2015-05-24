@@ -5,6 +5,13 @@ class UpdateOperation extends Operation {
     super(siteId, seqId, 'update');
   }
 
+  clone() : Operation {
+    var clone = new UpdateOperation(this.siteId, this.seqId);
+    clone.position = this.position;
+    clone.value = this.value;
+    return clone;
+  }
+
   transformWithAdd(op: Operation) : Operation {
     var clone = this.clone();
 

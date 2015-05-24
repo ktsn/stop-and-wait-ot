@@ -5,6 +5,13 @@ class RemoveOperation extends Operation {
     super(siteId, seqId, 'remove');
   }
 
+  clone() : Operation {
+    var clone = new RemoveOperation(this.siteId, this.seqId);
+    clone.position = this.position;
+    clone.value = this.value;
+    return clone;
+  }
+
   transformWithAdd(op: Operation) : Operation {
     var clone = this.clone();
 
