@@ -12,6 +12,10 @@ class Operation {
     this._type = type;
   }
 
+  get id() : string {
+    return this._siteId.toString + '-' + this._seqId.toString();
+  }
+
   get siteId() : number {
     return this._siteId;
   }
