@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 import AddOperation = require('../../app/ts/operations/add-operation');
 import StateSpace = require('../../app/ts/state/state-space');
 import State = require('../../app/ts/state/state');
-import Command = require('../../app/ts/state/command');
+import Transition = require('../../app/ts/state/transition');
 import SendingQueue = require('../../app/ts/state/sending-queue');
 
 describe('StateSpace', function() {
@@ -17,53 +17,53 @@ describe('StateSpace', function() {
     var local = new AddOperation(siteId, 1);
     space.applyOperation(local, true);
 
-    expect(space.current).to.equal(space.root.localCommand.toState);
+    expect(space.current).to.equal(space.root.local.to);
   });
 
   it('update the remote state if the operation is ack operation', function() {
     var local = new AddOperation(siteId, 1);
     var localState = new State();
-    space.current.localCommand = new Command(local, localState);
-    space.current = space.current.localCommand.toState;
+    space.current.local = new Transition(local, localState);
+    space.current = space.current.local.to;
 
     var remote = space.remote;
     space.applyOperation(local);
 
-    expect(space.remote).to.equal(remote.localCommand.toState);
+    expect(space.remote).to.equal(remote.local.to);
   });
 
   it('just appends new state if the remote operation is generated on the same state', function() {
     var remote = new AddOperation(2, 1);
     space.applyOperation(remote);
 
-    expect(space.remote).to.equal(space.root.remoteCommand.toState);
+    expect(space.remote).to.equal(space.root.remote.to);
   });
 
   it('converges if the remote operation conflicts with the local one', function() {
     var localState = new State();
     space.current = localState;
-    space.root.localCommand = new Command(new AddOperation(siteId, 1), localState);
+    space.root.local = new Transition(new AddOperation(siteId, 1), localState);
 
     var remote = new AddOperation(2, 1);
     space.applyOperation(remote);
 
-    expect(space.current).to.equal(localState.remoteCommand.toState);
-    expect(space.current).to.equal(space.remote.localCommand.toState);
+    expect(space.current).to.equal(localState.remote.to);
+    expect(space.current).to.equal(space.remote.local.to);
   });
 
-  it('transforms commands until the states are completely converged', function() {
+  it('transforms operations until the states are completely converged', function() {
     var localState1 = new State();
-    space.current.localCommand = new Command(new AddOperation(siteId, 1), localState1);
-    space.current = space.current.localCommand.toState;
+    space.current.local = new Transition(new AddOperation(siteId, 1), localState1);
+    space.current = space.current.local.to;
 
     var localState2 = new State();
-    space.current.localCommand = new Command(new AddOperation(siteId, 2), localState2);
-    space.current = space.current.localCommand.toState;
+    space.current.local = new Transition(new AddOperation(siteId, 2), localState2);
+    space.current = space.current.local.to;
 
     var remote = new AddOperation(2, 1);
     space.applyOperation(remote);
 
-    expect(space.current).to.equal(localState2.remoteCommand.toState);
-    expect(space.current).to.equal(space.remote.localCommand.toState.localCommand.toState);
+    expect(space.current).to.equal(localState2.remote.to);
+    expect(space.current).to.equal(space.remote.local.to.local.to);
   });
 });

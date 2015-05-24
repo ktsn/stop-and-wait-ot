@@ -1,8 +1,8 @@
-import Command = require('./command');
+import Transition = require('./transition');
 
 class State {
-  localCommand: Command = null;
-  remoteCommand: Command = null;
+  local: Transition = null;
+  remote: Transition = null;
 }
 
 export = State;

@@ -1,7 +1,7 @@
 import Operation = require('../operations/operation');
 import OperationFactory = require('../operations/operation-factory');
 import State = require('./state');
-import Command = require('./command');
+import Transition = require('./transition');
 import SendingQueue = require('./sending-queue');
 
 class StateSpace {
@@ -37,8 +37,8 @@ class StateSpace {
     // the operation is the ack operation if the siteId is same as the local one.
     // that indicates remote sites apply the local operation.
     if (op.siteId === this._siteId) {
-      // ensure this.remote has the localCommand
-      this.remote = this.remote.localCommand.toState;
+      // ensure this.remote has the local command.
+      this.remote = this.remote.local.to;
 
       // dequeue the operation for further operation's synchronization
       this._sendingQueue.dequeue();
@@ -52,44 +52,45 @@ class StateSpace {
     this._updateRemoteState(op);
 
     // converge the current state with the remote operation
-    while (head.localCommand) {
+    while (head.local) {
       this._convergeState(head);
 
       // update the operations in the sending queue
       // the client must send transformed operations
-      this._sendingQueue.updateOperation(head.remoteCommand.toState.localCommand.operation);
+      this._sendingQueue.updateOperation(head.remote.to.local.operation);
 
-      head = head.localCommand.toState;
+      head = head.local.to;
     }
 
-    this.current = head.remoteCommand.toState;
+    this.current = head.remote.to;
   }
 
   private _updateLocalState(op: Operation) {
     var next = new State();
-    this.current.localCommand = new Command(op, next);
+    this.current.local = new Transition(op, next);
     this.current = next;
   }
 
   private _updateRemoteState(op: Operation) {
     var next = new State();
-    this.remote.remoteCommand = new Command(op, next);
+    this.remote.remote = new Transition(op, next);
     this.remote = next;
   }
 
   private _convergeState(head: State) {
     // return if the states are already converged.
-    if (head.localCommand.toState.remoteCommand !== null) {
+    if (head.local.to.remote !== null) {
       return;
     }
 
-    var local: Command = head.localCommand;
-    var remote: Command = head.remoteCommand;
+    var local: Transition = head.local;
+    var remote: Transition = head.remote;
 
     var newState = new State();
 
-    local.toState.remoteCommand = new Command(local.operation.transformWith(remote.operation), newState);
-    remote.toState.localCommand = new Command(remote.operation.transformWith(local.operation), newState);
+    // converge to new state with transforming operations in each transition.
+    local.to.remote = new Transition(local.operation.transformWith(remote.operation), newState);
+    remote.to.local = new Transition(remote.operation.transformWith(local.operation), newState);
   }
 }
 

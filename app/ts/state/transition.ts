@@ -1,14 +1,14 @@
 import Operation = require('../operations/operation');
 import State = require('./state');
 
-class Command {
+class Transition {
   operation: Operation;
-  toState: State;
+  to: State;
 
   constructor(op: Operation, to: State) {
     this.operation = op;
-    this.toState = to;
+    this.to = to;
   }
 }
 
-export = Command;
+export = Transition;
