@@ -18,11 +18,12 @@ describe('StateSpace', function() {
     space.applyOperation(local, true);
 
     expect(space.current).to.equal(space.root.local.to);
+    expect(space.current.context).to.equal(1);
   });
 
   it('update the remote state if the operation is ack operation', function() {
     var local = new AddOperation(siteId, 1);
-    var localState = new State();
+    var localState = new State(1);
     space.current.local = new Transition(local, localState);
     space.current = space.current.local.to;
 
@@ -37,10 +38,11 @@ describe('StateSpace', function() {
     space.applyOperation(remote);
 
     expect(space.remote).to.equal(space.root.remote.to);
+    expect(space.remote.context).to.equal(1)
   });
 
   it('converges if the remote operation conflicts with the local one', function() {
-    var localState = new State();
+    var localState = new State(1);
     space.current = localState;
     space.root.local = new Transition(new AddOperation(siteId, 1), localState);
 
@@ -49,14 +51,15 @@ describe('StateSpace', function() {
 
     expect(space.current).to.equal(localState.remote.to);
     expect(space.current).to.equal(space.remote.local.to);
+    expect(space.current.context).to.equal(2);
   });
 
   it('transforms operations until the states are completely converged', function() {
-    var localState1 = new State();
+    var localState1 = new State(1);
     space.current.local = new Transition(new AddOperation(siteId, 1), localState1);
     space.current = space.current.local.to;
 
-    var localState2 = new State();
+    var localState2 = new State(2);
     space.current.local = new Transition(new AddOperation(siteId, 2), localState2);
     space.current = space.current.local.to;
 
@@ -65,5 +68,6 @@ describe('StateSpace', function() {
 
     expect(space.current).to.equal(localState2.remote.to);
     expect(space.current).to.equal(space.remote.local.to.local.to);
+    expect(space.current.context).to.equal(3);
   });
 });

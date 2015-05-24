@@ -17,7 +17,7 @@ class StateSpace {
     this._siteId = siteId;
     this._sendingQueue = sendingQueue;
     this._opFactory = new OperationFactory(this._siteId);
-    this.root = this.current = this.remote = new State();
+    this.root = this.current = this.remote = new State(0);
   }
 
   get siteId() : number {
@@ -27,10 +27,12 @@ class StateSpace {
   applyOperation(op: Operation, local: boolean) {
     // just apply the local operation
     if (local) {
+      var context = this.current.context;
+
       this._updateLocalState(op);
 
-      // enqueue the operation for synchronization
-      this._sendingQueue.enqueue(op);
+      // enqueue the operation and its context for synchronization
+      this._sendingQueue.enqueue(op, context);
       return;
     }
 
@@ -40,8 +42,8 @@ class StateSpace {
       // ensure this.remote has the local command.
       this.remote = this.remote.local.to;
 
-      // dequeue the operation for further operation's synchronization
-      this._sendingQueue.dequeue();
+      // notify the sending queue that the next operation can be send.
+      this._sendingQueue.readySend();
       return;
     }
 
@@ -55,9 +57,9 @@ class StateSpace {
     while (head.local) {
       this._convergeState(head);
 
-      // update the operations in the sending queue
+      // update the operations and contexts in the sending queue
       // the client must send transformed operations
-      this._sendingQueue.updateOperation(head.remote.to.local.operation);
+      this._sendingQueue.update(head.remote.to.local.operation, head.remote.to.context);
 
       head = head.local.to;
     }
@@ -66,13 +68,13 @@ class StateSpace {
   }
 
   private _updateLocalState(op: Operation) {
-    var next = new State();
+    var next = new State(this.current.context + 1);
     this.current.local = new Transition(op, next);
     this.current = next;
   }
 
   private _updateRemoteState(op: Operation) {
-    var next = new State();
+    var next = new State(this.remote.context + 1);
     this.remote.remote = new Transition(op, next);
     this.remote = next;
   }
@@ -86,7 +88,7 @@ class StateSpace {
     var local: Transition = head.local;
     var remote: Transition = head.remote;
 
-    var newState = new State();
+    var newState = new State(local.to.context + 1);
 
     // converge to new state with transforming operations in each transition.
     local.to.remote = new Transition(local.operation.transformWith(remote.operation), newState);
