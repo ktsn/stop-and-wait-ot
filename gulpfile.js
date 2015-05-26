@@ -11,7 +11,7 @@ gulp.task('clean', function(done) {
 });
 
 gulp.task('scripts', function() {
-  var tsResult = gulp.src('app/ts/**/*.ts', { base: 'app/ts' })
+  var tsResult = gulp.src(['typings/tsd.d.ts', 'app/ts/**/*.ts'], { base: 'app/ts' })
     .pipe(ts(tsProject));
 
   return tsResult.js.pipe(gulp.dest('build/js'));
