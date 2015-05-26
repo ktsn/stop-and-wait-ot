@@ -19,6 +19,10 @@ class OperationBuffer {
 
     this._buffer.push(transformed);
   }
+
+  getLast() : Operation {
+    return this._buffer[this._buffer.length - 1];
+  }
 }
 
 export = OperationBuffer;

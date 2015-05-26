@@ -12,18 +12,26 @@ class OperationFactory {
   }
 
   create(type: string, position: number, value: string) {
-    var op;
     this._maxSeqId++;
+    return this._create(type, position, value, this._siteId, this._maxSeqId);
+  }
+
+  createFromObj(obj: any) : Operation {
+    return this._create(obj.type, obj.position, obj.value, obj.siteId, obj.seqId);
+  }
+
+  private _create(type: string, position: number, value: string, siteId: number, seqId: number) : Operation {
+    var op;
 
     switch (type) {
       case 'add':
-        op = new AddOperation(this._siteId, this._maxSeqId);
+        op = new AddOperation(siteId, seqId);
         break;
       case 'update':
-        op = new UpdateOperation(this._siteId, this._maxSeqId);
+        op = new UpdateOperation(siteId, seqId);
         break;
       case 'remove':
-        op = new RemoveOperation(this._siteId, this._maxSeqId);
+        op = new RemoveOperation(siteId, seqId);
         break;
       default:
         throw new Error('Invalid operation type: ' + type);

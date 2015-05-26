@@ -28,6 +28,17 @@ class Operation {
     return this._type;
   }
 
+  parameters() : any {
+    return {
+      id: this.id,
+      siteId: this._siteId,
+      seqId: this._seqId,
+      type: this._type,
+      position: this.position,
+      value: this.value
+    };
+  }
+
   clone() : Operation {
     throw new Error('Class "Operation" requires inheritance');
   }
