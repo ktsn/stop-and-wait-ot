@@ -3,6 +3,7 @@ import OperationFactory = require('../operations/operation-factory');
 import State = require('./state');
 import Transition = require('./transition');
 import SendingQueue = require('./sending-queue');
+import noop = require('../utils/noop');
 
 class StateSpace {
   private _siteId: number;
@@ -12,6 +13,8 @@ class StateSpace {
   root: State;
   remote: State;
   current: State;
+
+  onApplyOperation: (op: Operation, local: boolean) => void = noop;
 
   constructor(siteId: number, sendingQueue: SendingQueue) {
     this._siteId = siteId;
@@ -30,6 +33,8 @@ class StateSpace {
       var context = this.current.context;
 
       this._updateLocalState(op);
+
+      this.onApplyOperation(op, local);
 
       // enqueue the operation and its context for synchronization
       this._sendingQueue.enqueue(op, context);
@@ -65,6 +70,8 @@ class StateSpace {
     }
 
     this.current = head.remote.to;
+
+    this.onApplyOperation(head.remote.operation, local);
   }
 
   private _updateLocalState(op: Operation) {
@@ -91,8 +98,8 @@ class StateSpace {
     var newState = new State(local.to.context + 1);
 
     // converge to new state with transforming operations in each transition.
-    local.to.remote = new Transition(local.operation.transformWith(remote.operation), newState);
-    remote.to.local = new Transition(remote.operation.transformWith(local.operation), newState);
+    local.to.remote = new Transition(remote.operation.transformWith(local.operation), newState);
+    remote.to.local = new Transition(local.operation.transformWith(remote.operation), newState);
   }
 }
 

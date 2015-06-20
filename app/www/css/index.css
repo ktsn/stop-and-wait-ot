@@ -1,0 +1,22 @@
+body {
+  font-family: "Verdana" sans-serif;
+  overflow: hidden;
+}
+
+.heading {
+  margin: 0;
+  padding: 20px 0;
+  width: 100%;
+  font-size: 44px;
+  font-weight: normal;
+  text-align: center;
+}
+
+.document {
+  display: block;
+  margin: 20px auto 0;
+  padding: 10px;
+  max-width: 90%;
+  color: #333333;
+  font-size: 36px;
+}

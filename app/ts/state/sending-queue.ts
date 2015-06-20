@@ -3,12 +3,14 @@ import Operation = require('../operations/operation');
 
 class SendingQueue {
   private _queue = [];
+  private _sending = false;
 
   // called when an opration is ready to send
   onReadySend: (op: Operation, context: number) => void = noop;
 
   enqueue(op: Operation, context: number) {
-    if (this._queue.length === 0) {
+    if (!this._sending) {
+      this._sending = true;
       this.onReadySend(op, context);
       return;
     }
@@ -21,11 +23,13 @@ class SendingQueue {
 
   readySend() {
     if (this._queue.length === 0) {
+      this._sending = false;
       return;
     }
 
-    var data = this._queue.shift();
+    this._sending = true;
 
+    var data = this._queue.shift();
     this.onReadySend(data.operation, data.context);
   }
 
