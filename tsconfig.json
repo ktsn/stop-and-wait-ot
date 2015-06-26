@@ -1,0 +1,43 @@
+{
+    "version": "1.5.0-beta",
+    "compileOnSave": false,
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "declaration": false,
+        "noImplicitAny": false,
+        "removeComments": true,
+        "noLib": false,
+        "preserveConstEnums": true,
+        "suppressImplicitAnyIndexErrors": true
+    },
+    "filesGlob": [
+        "./**/*.ts",
+        "!./node_modules/**/*.ts"
+    ],
+    "files": [
+        "./app/ts/main.ts",
+        "./app/ts/operations/add-operation.ts",
+        "./app/ts/operations/operation-buffer.ts",
+        "./app/ts/operations/operation-factory.ts",
+        "./app/ts/operations/operation.ts",
+        "./app/ts/operations/remove-operation.ts",
+        "./app/ts/operations/update-operation.ts",
+        "./app/ts/state/sending-queue.ts",
+        "./app/ts/state/state-space.ts",
+        "./app/ts/state/state.ts",
+        "./app/ts/state/transition.ts",
+        "./app/ts/sub.ts",
+        "./app/ts/utils/noop.ts",
+        "./test/operations/add-operation-test.ts",
+        "./test/operations/remove-operation-test.ts",
+        "./test/operations/update-operation-test.ts",
+        "./test/state/state-space-test.ts",
+        "./typings/chai/chai.d.ts",
+        "./typings/express/express.d.ts",
+        "./typings/mocha/mocha.d.ts",
+        "./typings/node/node.d.ts",
+        "./typings/socket.io/socket.io.d.ts",
+        "./typings/tsd.d.ts"
+    ]
+}
